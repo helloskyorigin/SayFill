@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f8f9ff"><title>SayFill — Voice Recorder</title>
+<style>
+body{margin:0;padding:20px;background:#f7f8fc;color:#16182b;font:16px/1.6 system-ui,sans-serif}main{max-width:520px;margin:30px auto}
+.card{background:white;padding:25px;border:1px solid #e2e5ed;border-radius:24px;box-shadow:0 12px 30px #1b15500a}
+small{font-weight:700;color:#584be7;letter-spacing:2px}h1{font-size:30px;line-height:1.2;margin:10px 0}p{color:#5b6479}
+#mic{display:block;margin:24px auto 8px;width:100px;height:100px;border:0;border-radius:30px;color:white;font-size:38px;background:linear-gradient(125deg,#249eff,#7037e7);box-shadow:0 10px 24px #4238c233}
+#mic[aria-pressed=true]{background:#dc3170}#hint{text-align:center}
+#status{margin:16px 0;padding:12px;background:#eff0ff;border-radius:12px;color:#343a8d;overflow-wrap:anywhere}
+#status.error{background:#fff0ee;color:#ae2737}
+label{display:block;margin-top:18px;font-size:13px;color:#596078}input,textarea{font:inherit;box-sizing:border-box;width:100%;border:1px solid #d2d4e2;border-radius:12px;padding:12px}textarea{min-height:130px}
+#result{display:none}#saveBtn,#copyBtn{margin-top:12px;border:0;padding:12px;border-radius:10px;font:inherit;cursor:pointer}
+#saveBtn{background:#614beb;color:white}#copyBtn{background:#eeeefd}a{color:#5644d3;text-decoration:none}
+</style>
+</head>
+<body><main>
+<a href="/demo.html">← Back to SayFill demo</a>
+<section class="card">
+<small>SAYFILL VOICE RECORDER</small>
+<h1>Speak your form answers.</h1>
+<p>Firefox Android may block the mic inside extension popups. This normal HTTPS tab can ask for microphone permission.</p>
+<button id="mic" aria-label="Start recording" aria-pressed="false">🎙</button><div id="hint">Tap to speak (Hindi, English, Hinglish)</div>
+<label for="code">Private beta access code (only if configured)</label>
+<input id="code" type="password" autocomplete="off" placeholder="Optional">
+<div id="status" role="status" aria-live="polite">Use dummy details for testing. No passwords or sensitive IDs.</div>
+<div id="result"><label for="transcript">Review your transcription</label>
+<textarea id="transcript" maxlength="5000"></textarea>
+<button id="saveBtn">Send to SayFill extension</button>
+<button id="copyBtn">Copy text</button>
+<p>Then switch to the form tab, open SayFill again and press <strong>Understand my answers</strong>.</p></div>
+</section></main>
+<script src="/voice.js" defer></script>
+</body></html>
