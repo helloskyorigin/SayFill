@@ -30,6 +30,7 @@ for (const target of ['firefox', 'chrome']) {
     // Firefox for Android DOES NOT support sidebar_action. The action popup
     // opens as a mobile overlay and works as a desktop toolbar popup as well.
     m.action.default_popup = 'sidepanel.html';
+    m.content_scripts = [{matches:['https://sayfill-five.vercel.app/voice.html*'], js:['voice-bridge.js'], run_at:'document_start'}];
     m.browser_specific_settings = {
       gecko: {
         id: 'sayfill@skyorigin.app',
