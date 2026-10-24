@@ -1,6 +1,6 @@
 # SayFill — Speak once. Fill everything. 🎙️
 
-**Firefox Android + Firefox desktop + Chrome desktop voice form filler.** Say your answers in Hindi, English, Hinglish or another supported language, review the AI suggestions, and fill supported form fields without automatic submission.
+**Firefox Android + Firefox desktop + Chrome desktop voice form filler (v0.4).** Say your answers in Hindi, English, Hinglish or another supported language, review the AI suggestions, and fill supported form fields without automatic submission.
 
 ## Project layout
 
@@ -71,3 +71,7 @@ Use `http://localhost:8080` as the extension backend URL while testing. Alternat
 SayFill sends audio, dictated text and **form field labels and options** to your configured API and on to Groq; do not test with sensitive personal data. It does *not* send existing form field values, store profiles, or auto-submit. Protected fields (passwords, OTP, banking/payment details, government ID numbers, consent checkboxes) are excluded from automated matching by the MVP. Complex custom widgets, shadow DOM, cross-origin iframes, some reactive forms, protected pages and CAPTCHA may not work.
 
 Source and automated tests are verified; real browser microphone-to-Groq end-to-end testing and Firefox Android installation/signing are pending. See `docs/BUILD_STATUS.md`.
+
+## Firefox Android microphone workaround (v0.4)
+
+Some Android Firefox extension popups reject `getUserMedia()`. SayFill's mic now opens the HTTPS `/voice.html` recorder tab on Android Firefox. Allow microphone permission, record and stop; the voice page transcribes via Groq and sends a transcript through an origin-checked content script into temporary extension storage. Return to the form tab and reopen SayFill; the new transcript appears automatically. Tap **Understand my answers** and review before filling. The transcript is removed after import; recordings are not saved on SayFill servers. If the browser does not relay data, use the recorder's **Copy text** button and paste manually. Needs end-to-end testing on a real Android device, so do not assume that all phones or forms work. Use dummy details.
