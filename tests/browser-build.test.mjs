@@ -32,3 +32,14 @@ test('Both builds default to the deployed backend without hardcoding secrets', (
     assert.doesNotMatch(ui, /gsk_[a-zA-Z0-9]+/);
   }
 });
+
+test('Firefox mobile recorder is restricted to official recorder URL', () => {
+  const ff = manifest('firefox');
+  assert.deepEqual(ff.content_scripts[0].matches, ['https://sayfill-five.vercel.app/voice.html*']);
+  assert.equal(ff.content_scripts[0].js[0], 'voice-bridge.js');
+  assert.ok(fs.existsSync(path.join(root, 'public/voice.html')));
+  assert.ok(fs.existsSync(path.join(root, 'public/voice.js')));
+  const ui = fs.readFileSync(path.join(root,'dist/firefox/sidepanel.js'),'utf8');
+  assert.match(ui, /openVoicePage/);
+  assert.match(ui, /pendingVoiceTranscript/);
+});
