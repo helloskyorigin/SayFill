@@ -1,6 +1,7 @@
 'use strict';
+const ext = globalThis.browser || globalThis.chrome;
 const $ = id => document.getElementById(id);
-const state = {tabId: null, fields: [], recording: false, recorder: null, stream: null, chunks: [], pending: [], busy: false, backend: 'http://localhost:8080', accessCode: ''};
+const state = {tabId: null, fields: [], recording: false, recorder: null, stream: null, chunks: [], pending: [], busy: false, backend: 'https://sayfill-five.vercel.app', accessCode: ''};
 const ui = {
   status: $('status'), scan: $('scanBtn'), pageTitle: $('pageTitle'), pageInfo: $('pageInfo'),
   record: $('recordBtn'), recordLabel: $('recordLabel'), speech: $('speechText'),
@@ -34,11 +35,11 @@ async function scanPage() {
   setBusy(true);
   ui.review.classList.add('hidden');
   try {
-    const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
-    if (!tab?.id || !/^https?:\/\//.test(tab.url || '')) throw Error('Open a normal http(s) form page (not chrome://, Web Store, or a browser settings page).');
+    const [tab] = await ext.tabs.query({active: true, currentWindow: true});
+    if (!Number.isInteger(tab?.id) || !/^https?:\/\//.test(tab.url || '')) throw Error('Open a normal http(s) form page (not chrome://, Web Store, or a browser settings page).');
     state.tabId = tab.id;
-    await chrome.scripting.executeScript({target: {tabId: tab.id}, files: ['content.js']});
-    const result = await chrome.tabs.sendMessage(tab.id, {type: 'SAYFILL_SCAN'});
+    await ext.scripting.executeScript({target: {tabId: tab.id}, files: ['content.js']});
+    const result = await ext.tabs.sendMessage(tab.id, {type: 'SAYFILL_SCAN'});
     state.fields = result.fields || [];
     ui.pageTitle.textContent = state.fields.length ? state.fields.length + ' fillable fields found' : 'No supported form fields found';
     ui.pageInfo.textContent = tab.title || result.url || 'Current tab';
@@ -69,7 +70,7 @@ async function startRecording() {
   try {
     if (!navigator.mediaDevices?.getUserMedia || !globalThis.MediaRecorder) throw Error('Microphone recording is not available here. You can type instead.');
     const stream = await navigator.mediaDevices.getUserMedia({audio: {echoCancellation: true, noiseSuppression: true}});
-    const mimeType = ['audio/webm;codecs=opus','audio/webm','audio/ogg'].find(t => MediaRecorder.isTypeSupported(t));
+    const mimeType = ['audio/webm;codecs=opus','audio/ogg;codecs=opus','audio/webm','audio/ogg','audio/mp4'].find(t => MediaRecorder.isTypeSupported(t));
     if (!mimeType) {stream.getTracks().forEach(t => t.stop()); throw Error('This browser cannot produce a supported audio recording.');}
     state.stream = stream;
     state.chunks = [];
@@ -156,26 +157,28 @@ async function fillForm() {
   if (!assignments.length) {setStatus('Select at least one answer to fill.', 'error'); return;}
   setBusy(true);
   try {
-    const result = await chrome.tabs.sendMessage(state.tabId, {type: 'SAYFILL_APPLY', assignments});
+    const result = await ext.tabs.sendMessage(state.tabId, {type: 'SAYFILL_APPLY', assignments});
     const ok = result.applied?.length || 0, skipped = result.skipped?.length || 0;
     setStatus(ok + ' fields filled' + (skipped ? '; ' + skipped + ' could not be filled' : '') + '. Check the form yourself before submitting.', ok ? 'success' : 'error');
   } catch (e) {setStatus('Could not fill: page may have navigated. Scan again.', 'error');} finally {setBusy(false);}
 }
 async function init() {
-  const saved = await chrome.storage.local.get(['backendUrl','accessCode']);
+  const saved = await ext.storage.local.get(['backendUrl','accessCode']);
   if (saved.backendUrl) state.backend = saved.backendUrl;
   state.accessCode = saved.accessCode || '';
   ui.accessCode.value = state.accessCode;
   ui.backendUrl.value = state.backend;
   ui.settingsToggle.addEventListener('click', () => ui.settings.classList.toggle('hidden'));
   ui.saveSettings.addEventListener('click', async () => {
-    try {state.backend = normalizeBackend(ui.backendUrl.value); state.accessCode = ui.accessCode.value.trim(); await chrome.storage.local.set({backendUrl: state.backend, accessCode: state.accessCode}); ui.settings.classList.add('hidden'); setStatus('Backend URL saved.', 'success');}
+    try {state.backend = normalizeBackend(ui.backendUrl.value); state.accessCode = ui.accessCode.value.trim(); await ext.storage.local.set({backendUrl: state.backend, accessCode: state.accessCode}); ui.settings.classList.add('hidden'); setStatus('Backend URL saved.', 'success');}
     catch (e) {setStatus(e.message, 'error');}
   });
   ui.scan.addEventListener('click', scanPage);
   ui.record.addEventListener('click', toggleRecording);
   ui.understand.addEventListener('click', understand);
   ui.fill.addEventListener('click', fillForm);
+  if (!state.backend.startsWith('https://') && state.backend !== 'http://localhost:8080') state.backend = 'https://sayfill-five.vercel.app';
+  ui.backendUrl.value = state.backend;
   await scanPage();
 }
 init().catch(e => setStatus(e.message || 'Could not initialize SayFill.', 'error'));
