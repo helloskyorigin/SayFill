@@ -2,12 +2,13 @@
 const ext = globalThis.browser || globalThis.chrome;
 const $ = id => document.getElementById(id);
 const state = {tabId: null, fields: [], recording: false, recorder: null, stream: null, chunks: [], pending: [], busy: false, backend: 'https://sayfill-five.vercel.app', accessCode: ''};
+const mobileFirefox = /Android/i.test(navigator.userAgent) && typeof globalThis.browser !== 'undefined';
 const ui = {
   status: $('status'), scan: $('scanBtn'), pageTitle: $('pageTitle'), pageInfo: $('pageInfo'),
   record: $('recordBtn'), recordLabel: $('recordLabel'), speech: $('speechText'),
   understand: $('understandBtn'), review: $('reviewSection'), assignments: $('assignments'),
   count: $('matchedCount'), missing: $('missing'), fill: $('fillBtn'),
-  settings: $('settings'), backendUrl: $('backendUrl'), settingsToggle: $('settingsToggle'), saveSettings: $('saveSettings'), accessCode: $('accessCode')
+  settings: $('settings'), backendUrl: $('backendUrl'), settingsToggle: $('settingsToggle'), saveSettings: $('saveSettings'), accessCode: $('accessCode'), openVoice: $('openVoiceBtn')
 };
 function setStatus(text, type = '') {
   ui.status.textContent = text;
@@ -99,9 +100,22 @@ async function startRecording() {
     setStatus('Listening. Speak naturally in your preferred language.');
     // Stop before oversized uploads; the user can record another chunk afterward.
     setTimeout(() => {if (state.recording && state.recorder === recorder) recorder.stop();}, 35000);
-  } catch (e) {clearRecording(); setStatus(e.message || 'Microphone permission denied.', 'error');}
+  } catch (e) {
+    clearRecording();
+    if (e.name === 'NotAllowedError' || e.name === 'SecurityError') {
+      ui.openVoice.classList.remove('hidden');
+      setStatus('This popup cannot access the mic. Tap Open voice recorder to record in a browser tab.', 'error');
+    } else setStatus(e.message || 'Microphone permission denied.', 'error');
+  }
+}
+async function openVoicePage() {
+  try {
+    setStatus('Speak on the secure recorder page. Return to your form and reopen SayFill.');
+    await ext.tabs.create({url: state.backend + '/voice.html'});
+  } catch (error) { setStatus('Could not open recorder: ' + error.message, 'error'); }
 }
 function toggleRecording() {
+  if (mobileFirefox) { openVoicePage(); return; }
   if (state.recording) {state.recorder.stop(); return;}
   if (!state.busy) startRecording();
 }
@@ -175,10 +189,24 @@ async function init() {
   });
   ui.scan.addEventListener('click', scanPage);
   ui.record.addEventListener('click', toggleRecording);
+  ui.openVoice.addEventListener('click', openVoicePage);
+  if (mobileFirefox) {
+    ui.openVoice.classList.remove('hidden');
+    ui.recordLabel.textContent = 'Tap to record in browser';
+  }
   ui.understand.addEventListener('click', understand);
   ui.fill.addEventListener('click', fillForm);
   if (!state.backend.startsWith('https://') && state.backend !== 'http://localhost:8080') state.backend = 'https://sayfill-five.vercel.app';
   ui.backendUrl.value = state.backend;
   await scanPage();
+  const received = await ext.storage.local.get('pendingVoiceTranscript');
+  const pending = received.pendingVoiceTranscript;
+  if (pending && typeof pending.text === 'string') {
+    await ext.storage.local.remove('pendingVoiceTranscript');
+    if (Date.now() - pending.time < 10 * 60 * 1000) {
+      ui.speech.value = [ui.speech.value.trim(), pending.text.slice(0,5000)].filter(Boolean).join('\n');
+      setStatus('Voice captured! Tap Understand my answers to match form fields.', 'success');
+    }
+  }
 }
 init().catch(e => setStatus(e.message || 'Could not initialize SayFill.', 'error'));
