@@ -9,7 +9,11 @@ execFileSync(process.execPath,[path.join(root,'scripts/build-extensions.mjs')],{
 for(const target of ['firefox','chrome']) {
   const m=JSON.parse(fs.readFileSync(path.join(root,'dist',target,'manifest.json'),'utf8'));
   if(m.manifest_version!==3)throw Error('bad manifest');
-  if(target==='firefox'&&!m.sidebar_action)throw Error('missing Firefox sidebar');
+  if(target==='firefox') {
+    if(m.sidebar_action)throw Error('Firefox Android cannot use a sidebar');
+    if(m.action?.default_popup!=='sidepanel.html')throw Error('Firefox mobile/desktop popup missing');
+    if(!m.browser_specific_settings?.gecko?.id)throw Error('Firefox Gecko ID missing');
+  }
   if(target==='chrome'&&!m.side_panel)throw Error('missing Chrome panel');
 }
 console.log('SayFill syntax + browser manifests passed');
