@@ -16,7 +16,7 @@ for (const target of ['firefox', 'chrome']) {
     name: 'SayFill — Speak once. Fill everything.',
     short_name: 'SayFill',
     description: 'Fill supported website forms by speaking Hindi, English, Hinglish or other languages. Review every answer first.',
-    version: '0.3.0',
+    version: '0.4.0',
     permissions: ['activeTab', 'scripting', 'storage'],
     host_permissions: ['https://*.vercel.app/*', 'http://localhost:8080/*'],
     action: {
