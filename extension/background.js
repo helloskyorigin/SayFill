@@ -1,11 +1,9 @@
-// A toolbar click toggles the browser-native sidebar.
 'use strict';
+// Chrome desktop uses a side panel; Firefox desktop and Firefox Android use
+// the manifest's browser action popup. Firefox Android has no sidebar API.
 const api = globalThis.browser || globalThis.chrome;
 if (api.sidePanel?.setPanelBehavior) {
-  api.sidePanel.setPanelBehavior({openPanelOnActionClick:true}).catch(console.warn);
-  api.runtime.onInstalled.addListener(() => api.sidePanel.setPanelBehavior({openPanelOnActionClick:true}).catch(console.warn));
-} else if (api.sidebarAction?.open) {
-  api.action.onClicked.addListener(() => {
-    api.sidebarAction.open().catch(console.warn);
-  });
+  const enable = () => api.sidePanel.setPanelBehavior({openPanelOnActionClick: true}).catch(console.warn);
+  enable();
+  api.runtime.onInstalled.addListener(enable);
 }
