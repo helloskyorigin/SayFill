@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fafbff">
+  <meta name="description" content="SayFill is a multilingual voice-powered form assistant. Speak once, review your answers, and fill online forms without repetitive typing.">
+  <title>SayFill — Speak once. Fill everything.</title>
+  <link rel="icon" href="logo.png" type="image/png"><link rel="stylesheet" href="styles.css">
+</head><body>
+  <header class="nav container">
+    <a class="logo" href="/" aria-label="SayFill home"><img src="logo.png" width="35" height="35" alt=""><span>SayFill</span></a>
+    <nav aria-label="Main navigation"><a href="#how">How it works</a><a href="#features">Features</a><a href="demo.html">Try demo form</a></nav>
+    <a class="nav-cta" href="#install">Download SayFill <span>↗</span></a>
+  </header>
+  <main>
+    <section class="hero container">
+      <div class="eyebrow"><span class="spark"></span> FOR EVERY FORM YOU DON'T WANT TO TYPE</div>
+      <h1>Stop typing forms.<br><span>Just speak.</span></h1>
+      <p class="hero-copy">SayFill listens to your answers, understands the fields on the page, and fills them for you. In your language. Under your control.</p>
+      <div class="hero-buttons"><a href="#install" class="button primary">Download SayFill for Firefox & Chrome <span>→</span></a><a href="demo.html" class="button outline">Try a sample form <span>↗</span></a></div>
+      <p class="microcopy"><span>✓</span> Hindi, English & more <span>✓</span> Review before filling <span>✓</span> No account needed</p>
+      <div class="mockup" aria-label="Illustrative SayFill voice-form experience">
+        <div class="browser">
+          <div class="browser-bar"><span class="dots"><i></i><i></i><i></i></span><div class="browser-url">example.com/application</div><span class="mini-tag">Example form</span></div>
+          <div class="browser-main">
+            <div class="form-demo">
+              <span class="form-step">YOUR APPLICATION</span><h2>Let's get to know you.</h2><p>Tell us a little about yourself to continue.</p>
+              <label>Full name</label><div class="fake-input"><span>Rahul Kumar</span><span class="greencheck">✓</span></div>
+              <label>Email address</label><div class="fake-input"><span>rahul@example.com</span><span class="greencheck">✓</span></div>
+              <label>City</label><div class="fake-input"><span>Patna</span><span class="greencheck">✓</span></div>
+              <label>Education</label><div class="fake-input muted">Choose one</div>
+            </div>
+            <div class="app-panel"><div class="panel-head"><img src="logo.png" width="27" height="27" alt=""><b>SayFill</b><span class="online">● Ready</span></div><div class="panel-inner"><small>YOUR VOICE, YOUR LANGUAGE</small><h3>Tell us the answers.</h3><p>Speak naturally. SayFill matches what you say to the form.</p><div class="mic-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 10a7 7 0 0014 0M12 17v5m-4 0h8"/></svg></div><b class="listen">Tap to speak</b><div class="speech">“Mera naam Rahul Kumar hai, email rahul@example.com, main Patna se hoon.”</div><div class="success-tag">✓ 3 answers ready to review</div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="mock-caption">Product illustration. Actual extension works on supported form pages.</div>
+    </section>
+    <section class="section container" id="how"><div class="section-title"><span class="eyebrow">SIMPLE BY DESIGN</span><h2>From your voice<br>to filled fields.</h2><p>No switching tabs. No copying answers. Just the web form you already opened.</p></div><div class="steps"><article><span class="step-number">01</span><div class="step-icon">⌘</div><h3>Open your form</h3><p>Visit a supported form website and click SayFill in your browser.</p></article><article><span class="step-number">02</span><div class="step-icon">◉</div><h3>Speak naturally</h3><p>Answer in Hindi, English, Hinglish, or another supported language.</p></article><article><span class="step-number">03</span><div class="step-icon">✓</div><h3>Review & fill</h3><p>Approve the matched answers, and SayFill fills the fields. You submit.</p></article></div></section>
+    <section class="section container" id="features"><div class="section-title"><span class="eyebrow">BUILT FOR LESS BUSYWORK</span><h2>One less thing<br>to type.</h2></div><div class="features"><article><div class="feature-symbol">◎</div><h3>Multilingual by default</h3><p>Speak in the language that feels natural. Not every form has to become a typing test.</p></article><article><div class="feature-symbol">≋</div><h3>Understands context</h3><p>Matches what you say to form labels, not just whichever field happens to be selected.</p></article><article><div class="feature-symbol">☑</div><h3>You're always in control</h3><p>Edit or skip suggestions before applying them. No automatic submission.</p></article><article><div class="feature-symbol">♧</div><h3>No profile required</h3><p>We don't create a saved profile of your information. The AI service processes the details needed for each request.</p></article></div></section>
+    <section class="section container" id="install"><div class="install-card"><div><span class="eyebrow">EARLY BUILD</span><h2>Speak once.<br>Fill everything.</h2><p>SayFill is in MVP development. Try the working extension locally while we prepare Firefox Add-ons submission and Chrome Web Store distribution.</p><a class="button primary" href="https://github.com/helloskyorigin/SayFill" target="_blank" rel="noopener">View installation instructions <span>↗</span></a></div><div class="install-visual"><img src="logo.png" width="122" height="122" alt="SayFill icon"></div></div></section>
+    <section class="section container faq"><h2>Good to know.</h2><details><summary>Does SayFill work on every website?</summary><p>Not yet. The MVP supports many standard visible HTML inputs and selects. CAPTCHA, protected browser pages, cross-origin frames, and complex custom widgets may not work.</p></details><details><summary>Does SayFill submit my form automatically?</summary><p>No. You review the proposed answers, select which fields to fill, and submit the form yourself.</p></details><details><summary>Do I need an account?</summary><p>No account is required for the initial extension. A backend handles audio transcription and form understanding.</p></details><details><summary>Is Chrome for Android supported?</summary><p>This initial release is intended for desktop Firefox and Chrome. Android support has not been tested.</p></details></section>
+  </main>
+  <footer class="container footer"><a class="logo" href="/"><img src="logo.png" width="27" height="27" alt="">SayFill</a><span>Speak once. Fill everything.</span><div><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="https://github.com/helloskyorigin/SayFill" target="_blank" rel="noopener">GitHub</a></div></footer>
+</body></html>

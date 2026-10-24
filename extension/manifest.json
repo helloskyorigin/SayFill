@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "SayFill — Speak once. Fill everything.",
+  "short_name": "SayFill",
+  "description": "Multilingual voice form filler with user review before applying answers.",
+  "version": "0.2.0",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "sidePanel"
+  ],
+  "host_permissions": [
+    "https://*.vercel.app/*",
+    "http://localhost:8080/*"
+  ],
+  "action": {
+    "default_title": "Open SayFill",
+    "default_icon": {
+      "16": "icon16.png",
+      "32": "icon32.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "32": "icon32.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "minimum_chrome_version": "114",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  }
+}
