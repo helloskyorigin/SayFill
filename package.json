@@ -1,14 +1,25 @@
 {
-  "name": "sayfill",
-  "version": "0.3.0",
+  "name": "papercue-ai",
+  "version": "0.1.0",
   "private": true,
-  "type": "module",
-  "engines": {
-    "node": ">=22"
-  },
   "scripts": {
-    "test": "node --test tests/*.test.mjs && node --test backend/tests/*.test.js",
-    "check": "node scripts/validate.mjs",
-    "build:extensions": "node scripts/build-extensions.mjs"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "node --test tests/*.test.mjs",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^15.5.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "lucide-react": "^0.468.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "typescript": "^5.8.0"
   }
 }

@@ -1,77 +1,34 @@
-# SayFill — Speak once. Fill everything. 🎙️
+# PaperCue AI
+**Every notice. A clear next step.**
 
-**Firefox Android + Firefox desktop + Chrome desktop voice form filler (v0.4).** Say your answers in Hindi, English, Hinglish or another supported language, review the AI suggestions, and fill supported form fields without automatic submission.
+PaperCue helps students turn Hindi/English scholarship, school, exam, or admission notices into evidence-aware action plans.
 
-## Project layout
+This repository **replaces the old SayFill extension codebase** by explicit request. The original SayFill content remains recoverable in earlier Git history (before this commit).
 
-| Directory | Purpose |
-|---|---|
-| `extension/` | Shared source for both browser extensions |
-| `scripts/build-extensions.mjs` | Creates Firefox + Chrome browser-specific manifests |
-| `api/`, `lib/` | Vercel Function endpoints powered by Groq |
-| `public/` | Static landing website, demo form and legal pages on the same Vercel deployment |
-| `backend/` | Older standalone Node server retained for local development and its mapping validation tests |
-
-## Build both extensions
-
-```sh
-npm run build:extensions
-npm test
-npm run check
-```
-
-Output: `dist/firefox/` and `dist/chrome/`. **Do not upload the entire repository ZIP to an extension store**; zip the contents of the correct browser build folder. Prebuilt `SayFill-Firefox.zip` and `SayFill-Chrome.zip` may also be provided alongside this repository.
-
-### Firefox desktop test (free, no add-on store account)
-
-1. Open Firefox desktop at `about:debugging#/runtime/this-firefox`.
-2. Click **Load Temporary Add-on** and select `dist/firefox/manifest.json` or an extracted file from `SayFill-Firefox-Desktop-Android.zip`.
-3. Open `https://sayfill-five.vercel.app/demo.html`, click SayFill's **toolbar icon**; a **popup** opens (not a sidebar).
-4. Review the backend URL (pre-set to `https://sayfill-five.vercel.app`), click **Scan**, speak or type dummy answers, **Understand my answers**, review, and **Fill selected fields**.
-
-Temporary add-ons disappear when Firefox fully restarts.
-
-### Firefox Android: SAME Firefox source package, different install process
-
-Firefox for Android does **not** support `sidebar_action`. This version uses Manifest V3 `action.default_popup`, presented in the Firefox Android **Extensions/Add-ons** menu, and works as a toolbar popup on desktop Firefox. Firefox Android microphone capture still requires device testing and permission; typing a transcript is available as fallback.
-
-**Unsigned ZIP is not a mobile install file.** First submit the **Firefox build ZIP** at [Mozilla Add-on Developer Hub](https://addons.mozilla.org/developers/) for Mozilla signing/review (no Chrome Web Store account needed). Once published/approved, users can install it from `addons.mozilla.org/android` using Firefox Android: menu → Extensions → find SayFill → Add. Alternatively Mozilla supports installing an already **signed** `.xpi` from file. No Mozilla signing, store review or Android device audio test has happened yet.
-
-**Do not claim mobile support is confirmed until tested on actual Android Firefox.** Some sites and microphone permissions may behave differently. The same Firefox package targets both Firefox desktop and Android, not Android Chrome.
-
-### Install Chrome locally
-
-Open `chrome://extensions/`, switch on Developer mode, **Load unpacked**, and select `dist/chrome/`. Click SayFill in toolbar to open Chrome's Side Panel. Other Chromium browsers with the Chrome sidePanel API may work but are not individually tested.
-
-## Deploy API + website to Vercel (no Google Cloud)
-
-1. Import `helloskyorigin/SayFill` into Vercel as an **Other** framework with the **repository root** as project directory. The repo's `vercel.json` uses static output `public/` plus separate `/api/*` functions.
-2. Set `GROQ_API_KEY` as a **secret** in Vercel project Environment Variables; never commit it to GitHub or paste it into frontend files.
-3. Optional but recommended before sharing: set `SAYFILL_ACCESS_CODE` (private beta access code) and put the same code into your own extension's Settings. This helps restrict casual unauthorized API use but is not a full public authentication or distributed rate-limiting solution.
-4. Deploy and open `https://<your-project>.vercel.app/api/health` (`configured: true` means `GROQ_API_KEY` is set). Open the homepage and `/demo.html`.
-5. The default SayFill backend points to `https://sayfill-five.vercel.app`; adjust it in the SayFill popup/settings only if using a different deployment. The permission allowlist currently accepts HTTPS hosts under `*.vercel.app` (or `http://localhost:8080` locally); custom domains require a matching manifest permission and new extension build.
-
-Vercel Functions allow ~4.5 MB request bodies, so the extension caps uploads at 4 MB and records for at most 35 seconds per chunk. No database, no account and no automatic submission. **Groq usage and Vercel usage may incur costs.** Enable spending limits/monitoring and production-grade abuse controls before a public launch.
-
-## Local API option
-
-Node 22+:
-
-```sh
-cd backend
-cp .env.example .env
-# add GROQ_API_KEY to .env (never commit)
+## How to run
+```bash
+npm install
+cp .env.example .env.local
+# Add GEMINI_API_KEY privately in .env.local
 npm run dev
 ```
+For Vercel: import this repo as a Next.js app, set server-side `GEMINI_API_KEY` in the Vercel project settings. Optional `GEMINI_MODEL` defaults to `gemini-2.5-flash`. Never add the real key to Git.
 
-Use `http://localhost:8080` as the extension backend URL while testing. Alternatively use `vercel dev` at the repository root if your Vercel CLI is configured.
+## Features
+- Upload PDF/JPG/PNG/WEBP (8 MB max), or paste plain notice text.
+- Gemini document analysis with structured JSON validation and explicit unknowns.
+- Evidence is **only marked quote-matched for pasted text**, and requires review for uploaded file scans.
+- Printable text checklist + `.ics` calendar export; **no automatic reminder notification**.
+- Explicitly fictional, offline sample for judge/demo walkthrough.
+- Responsive student-friendly UI, no user sign-up or payment.
 
-## Privacy and limitations
+## Privacy / limitations
+Uploads are transmitted to Google Gemini to perform analysis. Do not upload private documents without understanding provider retention. The app does not maintain its own database, and its in-memory rate limit is best-effort only. AI can misread dates or requirements: always verify the original official notice.
 
-SayFill sends audio, dictated text and **form field labels and options** to your configured API and on to Groq; do not test with sensitive personal data. It does *not* send existing form field values, store profiles, or auto-submit. Protected fields (passwords, OTP, banking/payment details, government ID numbers, consent checkboxes) are excluded from automated matching by the MVP. Complex custom widgets, shadow DOM, cross-origin iframes, some reactive forms, protected pages and CAPTCHA may not work.
-
-Source and automated tests are verified; real browser microphone-to-Groq end-to-end testing and Firefox Android installation/signing are pending. See `docs/BUILD_STATUS.md`.
-
-## Firefox Android microphone workaround (v0.4)
-
-Some Android Firefox extension popups reject `getUserMedia()`. SayFill's mic now opens the HTTPS `/voice.html` recorder tab on Android Firefox. Allow microphone permission, record and stop; the voice page transcribes via Groq and sends a transcript through an origin-checked content script into temporary extension storage. Return to the form tab and reopen SayFill; the new transcript appears automatically. Tap **Understand my answers** and review before filling. The transcript is removed after import; recordings are not saved on SayFill servers. If the browser does not relay data, use the recorder's **Copy text** button and paste manually. Needs end-to-end testing on a real Android device, so do not assume that all phones or forms work. Use dummy details.
+## Quality
+```bash
+npm test
+npm run lint
+npm run build
+```
+Requires network access to install dependencies. The real Gemini endpoint cannot be verified without a configured API key. Disclose AI tooling in hackathon submission.
