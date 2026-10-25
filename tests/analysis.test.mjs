@@ -3,3 +3,6 @@ test("invalid calendar dates rejected",()=>{assert.equal(isoDate("2026-02-30"),n
 test("unverifiable files marked review",()=>assert.equal(evidenceStatus("Original quote",""),"review"));
 test("text quotes need exact contiguous match",()=>{assert.equal(evidenceStatus("submit documents","Please submit  documents."),"matched");assert.equal(evidenceStatus("scholarship granted","Please submit documents."),"review");});
 test("missing year is not invented",()=>{const x=safeOutput({deadline:"Oct 27",items:[]},"");assert.equal(x.deadline,null);});
+
+test("PDF extracted text quotes can be matched",()=>{const x=safeOutput({documentTitle:"Notice",items:[{title:"Submit",evidence:"Submit by 28 October 2026."}]},"Submit by 28 October 2026.");assert.equal(x.items[0].evidenceStatus,"matched");});
+test("image quotes remain unverified",()=>{const x=safeOutput({documentTitle:"Notice",items:[{title:"Submit",evidence:"Submit today"}]},"");assert.equal(x.items[0].evidenceStatus,"review");});
